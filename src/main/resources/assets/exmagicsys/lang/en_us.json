@@ -1,0 +1,43 @@
+{
+  "key.category.exmagicsys": "Exavior's Magic System",
+  "key.exmagicsys.cast_spell": "Cast Spell",
+  "key.exmagicsys.open_gui": "Open Spell Menu",
+  "key.exmagicsys.cycle_spell": "Cycle Spell",
+
+  "exmagicsys.gui.select_spell.title": "Select a Spell",
+  "exmagicsys.gui.select_spell.search": "Search",
+  "exmagicsys.gui.classifications": "Classifications",
+  "exmagicsys.gui.select_classification.title": "Filter by Classification",
+  "exmagicsys.gui.classification.enabled": "[X] %s",
+  "exmagicsys.gui.classification.disabled": "[ ] %s",
+  "exmagicsys.gui.apply": "Apply",
+  "exmagicsys.gui.clear_filters": "Clear All",
+
+  "exmagicsys.gui.slot.empty": "[ Empty Slot ]",
+  "exmagicsys.gui.slot.pickup_tooltip": "Click to pick up",
+  "exmagicsys.gui.slot.place_tooltip": "Click to place spell",
+  "exmagicsys.gui.slot.trash": "[ Trash ]",
+  "exmagicsys.gui.slot.trash_tooltip": "Click to trash held spell",
+
+  "exmagicsys.classification.none": "None",
+  "exmagicsys.classification.example_fire": "Fire",
+  "exmagicsys.classification.example_divine": "Divine",
+
+  "spell.examplemod.example_fireball": "Fireball",
+  "spell.examplemod.example_fireball_minigun": "Fireball Minigun",
+  "spell.examplemod.example_area_heal": "Area Heal",
+
+  "exmagicsys.feedback.no_mana": "Not enough mana.",
+  "exmagicsys.feedback.on_cooldown": "Spell is on cooldown for %s seconds.",
+  "exmagicsys.feedback.no_spell_selected": "No spell equipped. Press 'X' to choose one.",
+
+  "exmagicsys.gui.prop.classification": "Class",
+  "exmagicsys.gui.prop.mana_cost": "Mana Cost",
+  "exmagicsys.gui.prop.cooldown": "Cooldown",
+  "exmagicsys.gui.prop.charge_time": "Charge Time",
+  "exmagicsys.gui.prop.cast_time": "Cast Time",
+  "exmagicsys.gui.prop.active_time": "Active Time",
+  "exmagicsys.gui.prop.active_mana_cost": "Active Cost",
+  "exmagicsys.gui.prop.seconds": "s",
+  "exmagicsys.gui.prop.ticks": "t"
+}
