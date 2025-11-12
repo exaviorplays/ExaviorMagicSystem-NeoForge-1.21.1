@@ -1,15 +1,20 @@
 package net.exavior.exmagicsys.api;
 
 import net.exavior.exmagicsys.EMSConfig;
+import net.exavior.exmagicsys.ExaviorMagicSystem;
 import net.exavior.exmagicsys.api.spell.Spell;
 import net.exavior.exmagicsys.api.spell.SpellArm;
+import net.exavior.exmagicsys.data.CastingPhase;
+import net.exavior.exmagicsys.data.CastingState;
 import net.exavior.exmagicsys.network.server.toclientpackets.ClientClearArmPosePacket;
 import net.exavior.exmagicsys.network.server.toclientpackets.ClientSetArmPosePacket;
 import net.exavior.exmagicsys.registry.EMSDataAttachments;
 import net.exavior.exmagicsys.registry.EMSRegistries;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -211,26 +216,98 @@ public class EMSMagicApi {
         }
     }
 
+    /**
+     * Starts the casting process for a spell.
+     * Call this from the server-side (e.g., in an Item.use() method).
+     * This handles all logic for charging, casting, or instant firing.
+     *
+     * @param player The player who is casting.
+     * @param spellId The ResourceLocation of the spell to cast.
+     */
+    public static void startCasting(Player player, ResourceLocation spellId) {
+        if (player.level().isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        ServerLevel level = serverPlayer.serverLevel();
+
+        serverPlayer.setData(EMSDataAttachments.IS_CAST_KEY_HELD.get(), true);
+
+        CastingState currentState = serverPlayer.getData(EMSDataAttachments.CASTING_STATE.get());
+        if (currentState.isCasting()) {
+            return;
+        }
+
+        Registry<Spell> spellRegistry = level.registryAccess().registryOrThrow(EMSRegistries.SPELL_REGISTRY_KEY);
+        Spell spell = spellRegistry.get(spellId);
+
+        if (spell == null) {
+            ExaviorMagicSystem.LOGGER.warn("Player {} tried to cast unknown spell: {}", player.getName().getString(), spellId);
+            return;
+        }
+
+        if (EMSMagicApi.knowsSpell(serverPlayer, spellId) &&
+                EMSMagicApi.canCastSpell(serverPlayer, spell, spellId)) {
+
+            if (spell.getChargeTimeTicks() > 0) {
+                CastingState newState = new CastingState(spellId, CastingPhase.CHARGING, level.getGameTime());
+                serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
+                EMSMagicApi.playArmPose(serverPlayer, spell.getChargeArmPose(), spell.getSpellArm());
+
+            } else if (spell.getCastTimeTicks() > 0) {
+                CastingState newState = new CastingState(spellId, CastingPhase.CASTING, level.getGameTime());
+                serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
+                EMSMagicApi.playArmPose(serverPlayer, spell.getCastArmPose(), spell.getSpellArm());
+
+            } else {
+                fireInstantSpell(serverPlayer, level, spell, spellId);
+            }
+        }
+    }
+
+    /**
+     * Stops the casting process (e.g., on key release or item use stop).
+     * Call this from the server-side (e.g., in an Item.releaseUsing() method).
+     * This handles canceling a charge.
+     *
+     * @param player The player who stopped casting.
+     */
+    public static void releaseCasting(Player player) {
+        if (player.level().isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        serverPlayer.setData(EMSDataAttachments.IS_CAST_KEY_HELD.get(), false);
+
+        CastingState currentState = serverPlayer.getData(EMSDataAttachments.CASTING_STATE.get());
+        if (currentState.isCasting() && currentState.phase() == CastingPhase.CHARGING) {
+            serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), CastingState.NONE);
+            EMSMagicApi.stopArmPose(serverPlayer);
+        }
+    }
+
 
     /**
      * Checks if a player has enough mana and is not on cooldown for a spell.
      */
     public static boolean canCastSpell(Player player, Spell spell, ResourceLocation spellId) {
-        int currentMana = player.getData(EMSDataAttachments.MANA_VALUE.get()); // <-- Added .get()
+        int currentMana = player.getData(EMSDataAttachments.MANA_VALUE.get());
         if (currentMana < spell.getManaCost()) {
-            // player.sendSystemMessage(Component.translatable("exmagicsys.feedback.no_mana"));
-            // player.displayClientMessage(Component.translatable("exmagicsys.feedback.no_mana"), true);
+            if(!player.level().isClientSide()) {
+                //player.displayClientMessage(Component.translatable("exmagicsys.feedback.no_mana"), true);
+            }
             return false;
         }
 
-        Map<ResourceLocation, Long> cooldowns = player.getData(EMSDataAttachments.SPELL_COOLDOWNS.get()); // <-- Added .get()
+        Map<ResourceLocation, Long> cooldowns = player.getData(EMSDataAttachments.SPELL_COOLDOWNS.get());
         long currentTime = player.level().getGameTime();
         long expirationTime = cooldowns.getOrDefault(spellId, 0L);
 
         if (currentTime < expirationTime) {
             long ticksRemaining = expirationTime - currentTime;
-            // player.sendSystemMessage(Component.translatable("exmagicsys.feedback.on_cooldown", String.format("%.1f", ticksRemaining / 20.0f)));
-            // player.displayClientMessage(Component.translatable("exmagicsys.feedback.on_cooldown", String.format("%.1f", ticksRemaining / 20.0f)), true);
+            if(!player.level().isClientSide()) {
+                //player.displayClientMessage(Component.translatable("exmagicsys.feedback.on_cooldown", String.format("%.1f", ticksRemaining / 20.0f)), true);
+            }
             return false;
         }
 
@@ -310,14 +387,17 @@ public class EMSMagicApi {
         PacketDistributor.sendToPlayer(player, new ClientClearArmPosePacket());
     }
 
-    // ----------------------------------------------------------------------------
+    // ------------------------------- Private Helper -----------------------------------------
 
-    /**
-     * A private helper to apply the mana regen cooldown based on the config.
-     */
+    private static void fireInstantSpell(ServerPlayer player, ServerLevel level, Spell spell, ResourceLocation spellId) {
+        if (EMSMagicApi.canCastSpell(player, spell, spellId)) {
+            spell.cast(level, player);
+            EMSMagicApi.applySpellCosts(player, spell, spellId);
+        }
+    }
+
     private static void triggerManaRegenCooldown(Player player) {
         long cooldownTime = EMSConfig.SERVER.manaRegenCooldown.get();
-
         if (cooldownTime > 0) {
             long gameTime = player.level().getGameTime();
             player.setData(EMSDataAttachments.MANA_REGEN_COOLDOWN_UNTIL.get(), gameTime + cooldownTime);
