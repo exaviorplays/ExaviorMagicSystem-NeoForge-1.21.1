@@ -3,8 +3,8 @@ package net.exavior.exmagicsys.api;
 import net.exavior.exmagicsys.EMSConfig;
 import net.exavior.exmagicsys.api.spell.Spell;
 import net.exavior.exmagicsys.api.spell.SpellArm;
-import net.exavior.exmagicsys.network.server.toclientpackets.ClientboundClearArmPosePacket;
-import net.exavior.exmagicsys.network.server.toclientpackets.ClientboundSetArmPosePacket;
+import net.exavior.exmagicsys.network.server.toclientpackets.ClientClearArmPosePacket;
+import net.exavior.exmagicsys.network.server.toclientpackets.ClientSetArmPosePacket;
 import net.exavior.exmagicsys.registry.EMSDataAttachments;
 import net.exavior.exmagicsys.registry.EMSRegistries;
 import net.minecraft.client.model.HumanoidModel;
@@ -297,7 +297,7 @@ public class EMSMagicApi {
      */
     public static void playArmPose(ServerPlayer player, @Nullable HumanoidModel.ArmPose pose, SpellArm arm) {
         if (pose != null) {
-            PacketDistributor.sendToPlayer(player, new ClientboundSetArmPosePacket(pose, arm));
+            PacketDistributor.sendToPlayer(player, new ClientSetArmPosePacket(pose, arm));
         } else {
             stopArmPose(player);
         }
@@ -307,7 +307,7 @@ public class EMSMagicApi {
      * Tells a player's client to stop forcing an ArmPose.
      */
     public static void stopArmPose(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, new ClientboundClearArmPosePacket());
+        PacketDistributor.sendToPlayer(player, new ClientClearArmPosePacket());
     }
 
     // ----------------------------------------------------------------------------

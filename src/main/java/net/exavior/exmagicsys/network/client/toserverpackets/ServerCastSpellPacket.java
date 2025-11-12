@@ -11,15 +11,15 @@ import net.minecraft.resources.ResourceLocation;
  *
  * @param spellId The spell the client is trying to cast.
  */
-public record ServerboundCastSpellPacket(ResourceLocation spellId) implements CustomPacketPayload {
+public record ServerCastSpellPacket(ResourceLocation spellId) implements CustomPacketPayload {
 
-    public static final Type<ServerboundCastSpellPacket> TYPE =
+    public static final Type<ServerCastSpellPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(ExaviorMagicSystem.MODID, "cast_spell"));
 
-    public static final StreamCodec<ByteBuf, ServerboundCastSpellPacket> STREAM_CODEC =
+    public static final StreamCodec<ByteBuf, ServerCastSpellPacket> STREAM_CODEC =
             ResourceLocation.STREAM_CODEC.map(
-                    ServerboundCastSpellPacket::new,
-                    ServerboundCastSpellPacket::spellId
+                    ServerCastSpellPacket::new,
+                    ServerCastSpellPacket::spellId
             );
 
     @Override

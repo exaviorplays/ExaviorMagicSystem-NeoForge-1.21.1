@@ -3,7 +3,7 @@ package net.exavior.exmagicsys.gui.screen;
 import net.exavior.exmagicsys.api.EMSMagicApi;
 import net.exavior.exmagicsys.api.spell.Spell;
 import net.exavior.exmagicsys.api.spell.SpellClassification;
-import net.exavior.exmagicsys.network.client.toserverpackets.ServerboundSetEquippedSpellPacket;
+import net.exavior.exmagicsys.network.client.toserverpackets.ServerSetEquippedSpellPacket;
 import net.exavior.exmagicsys.registry.EMSDataAttachments;
 import net.exavior.exmagicsys.registry.EMSRegistries;
 import net.minecraft.client.Minecraft;
@@ -167,7 +167,7 @@ public class SpellSelectionScreen extends Screen {
         this.spellListWidget.updateEntries(newEntries);
     }
     private void setEquippedSpell(int slot, @Nullable ResourceLocation spellId) {
-        PacketDistributor.sendToServer(new ServerboundSetEquippedSpellPacket(slot, spellId));
+        PacketDistributor.sendToServer(new ServerSetEquippedSpellPacket(slot, spellId));
         List<ResourceLocation> equipped = new ArrayList<>(EMSMagicApi.getEquippedSpells(this.minecraft.player));
         if (equipped.size() == 4) {
             equipped.set(slot, spellId);

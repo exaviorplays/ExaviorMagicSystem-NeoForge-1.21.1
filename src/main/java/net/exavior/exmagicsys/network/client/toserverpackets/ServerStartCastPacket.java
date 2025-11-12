@@ -3,7 +3,6 @@ package net.exavior.exmagicsys.network.client.toserverpackets;
 
 import io.netty.buffer.ByteBuf;
 import net.exavior.exmagicsys.ExaviorMagicSystem;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -11,15 +10,15 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Sent from Client to Server when the cast key is PRESSED.
  */
-public record ServerboundStartCastPacket(ResourceLocation spellId) implements CustomPacketPayload {
+public record ServerStartCastPacket(ResourceLocation spellId) implements CustomPacketPayload {
 
-    public static final Type<ServerboundStartCastPacket> TYPE =
+    public static final Type<ServerStartCastPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(ExaviorMagicSystem.MODID, "start_cast"));
 
-    public static final StreamCodec<ByteBuf, ServerboundStartCastPacket> STREAM_CODEC =
+    public static final StreamCodec<ByteBuf, ServerStartCastPacket> STREAM_CODEC =
             ResourceLocation.STREAM_CODEC.map(
-                    ServerboundStartCastPacket::new,
-                    ServerboundStartCastPacket::spellId
+                    ServerStartCastPacket::new,
+                    ServerStartCastPacket::spellId
             );
 
     @Override

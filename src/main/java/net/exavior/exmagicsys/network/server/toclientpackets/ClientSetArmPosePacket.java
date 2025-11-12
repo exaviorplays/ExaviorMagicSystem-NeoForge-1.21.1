@@ -13,9 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Sent from Server to Client to tell the client to force a specific ArmPose.
  */
-public record ClientboundSetArmPosePacket(HumanoidModel.ArmPose pose, SpellArm arm) implements CustomPacketPayload {
+public record ClientSetArmPosePacket(HumanoidModel.ArmPose pose, SpellArm arm) implements CustomPacketPayload {
 
-    public static final Type<ClientboundSetArmPosePacket> TYPE =
+    public static final Type<ClientSetArmPosePacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(ExaviorMagicSystem.MODID, "set_arm_pose"));
 
     private static final StreamCodec<ByteBuf, HumanoidModel.ArmPose> POSE_CODEC =
@@ -24,13 +24,13 @@ public record ClientboundSetArmPosePacket(HumanoidModel.ArmPose pose, SpellArm a
                     (HumanoidModel.ArmPose e) -> e.ordinal()
             );
             
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundSetArmPosePacket> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientSetArmPosePacket> STREAM_CODEC =
             StreamCodec.composite(
                     POSE_CODEC,
-                    ClientboundSetArmPosePacket::pose,
+                    ClientSetArmPosePacket::pose,
                     SpellArm.STREAM_CODEC,
-                    ClientboundSetArmPosePacket::arm,
-                    ClientboundSetArmPosePacket::new
+                    ClientSetArmPosePacket::arm,
+                    ClientSetArmPosePacket::new
             );
 
     @Override

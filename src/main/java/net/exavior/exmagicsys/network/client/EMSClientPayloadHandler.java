@@ -1,11 +1,10 @@
     package net.exavior.exmagicsys.network.client;
 
     import net.exavior.exmagicsys.ExaviorMagicSystem;
-    import net.exavior.exmagicsys.network.server.toclientpackets.ClientboundClearArmPosePacket;
-    import net.exavior.exmagicsys.network.server.toclientpackets.ClientboundSetArmPosePacket;
+    import net.exavior.exmagicsys.network.server.toclientpackets.ClientClearArmPosePacket;
+    import net.exavior.exmagicsys.network.server.toclientpackets.ClientSetArmPosePacket;
     import net.exavior.exmagicsys.registry.EMSDataAttachments;
     import net.minecraft.client.Minecraft;
-    import net.minecraft.resources.ResourceLocation;
     import net.minecraft.world.entity.player.Player;
     import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -18,7 +17,7 @@
             return INSTANCE;
         }
 
-        public void handleSetArmPose(ClientboundSetArmPosePacket packet, IPayloadContext context) {
+        public void handleSetArmPose(ClientSetArmPosePacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 Player player = Minecraft.getInstance().player;
                 if (player != null) {
@@ -28,7 +27,7 @@
             });
         }
 
-        public void handleClearArmPose(ClientboundClearArmPosePacket packet, IPayloadContext context) {
+        public void handleClearArmPose(ClientClearArmPosePacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 Player player = Minecraft.getInstance().player;
                 if (player != null) {

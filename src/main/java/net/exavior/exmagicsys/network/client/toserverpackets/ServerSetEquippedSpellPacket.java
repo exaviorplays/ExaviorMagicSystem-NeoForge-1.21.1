@@ -12,18 +12,18 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Sent from Client to Server when selecting a spell in the GUI.
  */
-public record ServerboundSetEquippedSpellPacket(int slot, @Nullable ResourceLocation spellId) implements CustomPacketPayload {
+public record ServerSetEquippedSpellPacket(int slot, @Nullable ResourceLocation spellId) implements CustomPacketPayload {
 
-    public static final Type<ServerboundSetEquippedSpellPacket> TYPE =
+    public static final Type<ServerSetEquippedSpellPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(ExaviorMagicSystem.MODID, "set_equipped_spell"));
             
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundSetEquippedSpellPacket> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, ServerSetEquippedSpellPacket> STREAM_CODEC =
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT,
-                    ServerboundSetEquippedSpellPacket::slot,
+                    ServerSetEquippedSpellPacket::slot,
                     EMSDataAttachments.NULLABLE_RL_STREAM_CODEC,
-                    ServerboundSetEquippedSpellPacket::spellId,
-                    ServerboundSetEquippedSpellPacket::new
+                    ServerSetEquippedSpellPacket::spellId,
+                    ServerSetEquippedSpellPacket::new
             );
 
     @Override

@@ -4,9 +4,9 @@ import net.exavior.exmagicsys.api.event.OpenSpellGuiEvent;
 import net.exavior.exmagicsys.api.hud.ManaBarOverlay;
 import net.exavior.exmagicsys.gui.screen.SpellSelectionScreen;
 import net.exavior.exmagicsys.keymap.EMSClientKeyMaps;
-import net.exavior.exmagicsys.network.client.toserverpackets.ServerboundCycleSpellPacket;
-import net.exavior.exmagicsys.network.client.toserverpackets.ServerboundReleaseCastKeyPacket;
-import net.exavior.exmagicsys.network.client.toserverpackets.ServerboundStartCastPacket;
+import net.exavior.exmagicsys.network.client.toserverpackets.ServerCycleSpellPacket;
+import net.exavior.exmagicsys.network.client.toserverpackets.ServerReleaseCastKeyPacket;
+import net.exavior.exmagicsys.network.client.toserverpackets.ServerStartCastPacket;
 import net.exavior.exmagicsys.registry.EMSDataAttachments;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -91,7 +91,7 @@ public class ExaviorMagicSystemClient {
 
             if (EMSClientKeyMaps.CYCLE_SPELL_KEY.consumeClick()) {
                 if (mc.screen == null) {
-                    PacketDistributor.sendToServer(new ServerboundCycleSpellPacket());
+                    PacketDistributor.sendToServer(new ServerCycleSpellPacket());
                 }
                 return;
             }
@@ -118,9 +118,9 @@ public class ExaviorMagicSystemClient {
                 }
 
                 if (event.getAction() == GLFW.GLFW_PRESS) {
-                    PacketDistributor.sendToServer(new ServerboundStartCastPacket(spellToCast));
+                    PacketDistributor.sendToServer(new ServerStartCastPacket(spellToCast));
                 } else if (event.getAction() == GLFW.GLFW_RELEASE) {
-                    PacketDistributor.sendToServer(new ServerboundReleaseCastKeyPacket());
+                    PacketDistributor.sendToServer(new ServerReleaseCastKeyPacket());
                 }
             }
         }

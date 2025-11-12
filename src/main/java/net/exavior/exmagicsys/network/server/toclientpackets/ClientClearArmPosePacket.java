@@ -9,13 +9,13 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Sent from Server to Client to tell the client to stop forcing an ArmPose.
  */
-public record ClientboundClearArmPosePacket() implements CustomPacketPayload {
+public record ClientClearArmPosePacket() implements CustomPacketPayload {
 
-    public static final Type<ClientboundClearArmPosePacket> TYPE =
+    public static final Type<ClientClearArmPosePacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(ExaviorMagicSystem.MODID, "clear_arm_pose"));
             
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundClearArmPosePacket> STREAM_CODEC =
-            StreamCodec.unit(new ClientboundClearArmPosePacket());
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientClearArmPosePacket> STREAM_CODEC =
+            StreamCodec.unit(new ClientClearArmPosePacket());
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

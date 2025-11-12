@@ -9,13 +9,13 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Sent from Client to Server when the cycle key is pressed.
  */
-public record ServerboundCycleSpellPacket() implements CustomPacketPayload {
+public record ServerCycleSpellPacket() implements CustomPacketPayload {
 
-    public static final Type<ServerboundCycleSpellPacket> TYPE =
+    public static final Type<ServerCycleSpellPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(ExaviorMagicSystem.MODID, "cycle_spell"));
             
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundCycleSpellPacket> STREAM_CODEC =
-            StreamCodec.unit(new ServerboundCycleSpellPacket());
+    public static final StreamCodec<RegistryFriendlyByteBuf, ServerCycleSpellPacket> STREAM_CODEC =
+            StreamCodec.unit(new ServerCycleSpellPacket());
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

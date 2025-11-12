@@ -9,13 +9,13 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Sent from Client to Server when the cast key is RELEASED.
  */
-public record ServerboundReleaseCastKeyPacket() implements CustomPacketPayload {
+public record ServerReleaseCastKeyPacket() implements CustomPacketPayload {
 
-    public static final Type<ServerboundReleaseCastKeyPacket> TYPE =
+    public static final Type<ServerReleaseCastKeyPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(ExaviorMagicSystem.MODID, "release_cast_key"));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundReleaseCastKeyPacket> STREAM_CODEC =
-            StreamCodec.unit(new ServerboundReleaseCastKeyPacket());
+    public static final StreamCodec<RegistryFriendlyByteBuf, ServerReleaseCastKeyPacket> STREAM_CODEC =
+            StreamCodec.unit(new ServerReleaseCastKeyPacket());
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

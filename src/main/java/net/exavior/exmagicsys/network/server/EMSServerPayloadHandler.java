@@ -28,7 +28,7 @@ public class EMSServerPayloadHandler {
         }
     }
 
-    public void handleStartCastPacket(ServerboundStartCastPacket packet, IPayloadContext context) {
+    public void handleStartCastPacket(ServerStartCastPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player && player.level() instanceof ServerLevel level) {
 
@@ -70,7 +70,7 @@ public class EMSServerPayloadHandler {
         });
     }
 
-    public void handleReleaseCastKeyPacket(ServerboundReleaseCastKeyPacket packet, IPayloadContext context) {
+    public void handleReleaseCastKeyPacket(ServerReleaseCastKeyPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
 
@@ -87,7 +87,7 @@ public class EMSServerPayloadHandler {
         });
     }
 
-    public void handleCycleSpellPacket(ServerboundCycleSpellPacket packet, IPayloadContext context) {
+    public void handleCycleSpellPacket(ServerCycleSpellPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
                 EMSMagicApi.cycleActiveSpell(player);
@@ -95,7 +95,7 @@ public class EMSServerPayloadHandler {
         });
     }
 
-    public void handleSetEquippedSpellPacket(ServerboundSetEquippedSpellPacket packet, IPayloadContext context) {
+    public void handleSetEquippedSpellPacket(ServerSetEquippedSpellPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
                 EMSMagicApi.setEquippedSpell(player, packet.slot(), packet.spellId());

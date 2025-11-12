@@ -3,8 +3,8 @@ package net.exavior.exmagicsys.network;
 import net.exavior.exmagicsys.network.client.EMSClientPayloadHandler;
 import net.exavior.exmagicsys.network.client.toserverpackets.*;
 import net.exavior.exmagicsys.network.server.EMSServerPayloadHandler;
-import net.exavior.exmagicsys.network.server.toclientpackets.ClientboundClearArmPosePacket;
-import net.exavior.exmagicsys.network.server.toclientpackets.ClientboundSetArmPosePacket;
+import net.exavior.exmagicsys.network.server.toclientpackets.ClientClearArmPosePacket;
+import net.exavior.exmagicsys.network.server.toclientpackets.ClientSetArmPosePacket;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class EMSNetworkHandler {
@@ -13,13 +13,14 @@ public class EMSNetworkHandler {
         /*registrar.playToClient(STCAddWallJumpRegenPacket.TYPE, STCAddWallJumpRegenPacket.STREAM_CODEC,
                 DozedClientPayloadHandler.getInstance()::handleAddWallJumpRegenToClient);*/
         registrar.playToClient(
-                ClientboundSetArmPosePacket.TYPE,
-                ClientboundSetArmPosePacket.STREAM_CODEC,
+                ClientSetArmPosePacket.TYPE,
+                ClientSetArmPosePacket.STREAM_CODEC,
                 EMSClientPayloadHandler.getInstance()::handleSetArmPose
         );
+
         registrar.playToClient(
-                ClientboundClearArmPosePacket.TYPE,
-                ClientboundClearArmPosePacket.STREAM_CODEC,
+                ClientClearArmPosePacket.TYPE,
+                ClientClearArmPosePacket.STREAM_CODEC,
                 EMSClientPayloadHandler.getInstance()::handleClearArmPose
         );
 
@@ -27,13 +28,18 @@ public class EMSNetworkHandler {
         /*registrar.playToServer(ServerboundCastSpellPacket.TYPE, ServerboundCastSpellPacket.STREAM_CODEC,
                 EMSServerPayloadHandler.getInstance()::handleCastSpellPacket);*/
 
-        registrar.playToServer(ServerboundStartCastPacket.TYPE, ServerboundStartCastPacket.STREAM_CODEC,
-                EMSServerPayloadHandler.getInstance()::handleStartCastPacket);
-        registrar.playToServer(ServerboundReleaseCastKeyPacket.TYPE, ServerboundReleaseCastKeyPacket.STREAM_CODEC,
-                EMSServerPayloadHandler.getInstance()::handleReleaseCastKeyPacket);
+        registrar.playToServer(ServerStartCastPacket.TYPE,
+                ServerStartCastPacket.STREAM_CODEC,
+                EMSServerPayloadHandler.getInstance()::handleStartCastPacket
+        );
 
-        registrar.playToServer(ServerboundCycleSpellPacket.TYPE, ServerboundCycleSpellPacket.STREAM_CODEC, EMSServerPayloadHandler.getInstance()::handleCycleSpellPacket);
-        registrar.playToServer(ServerboundSetEquippedSpellPacket.TYPE, ServerboundSetEquippedSpellPacket.STREAM_CODEC, EMSServerPayloadHandler.getInstance()::handleSetEquippedSpellPacket);
+        registrar.playToServer(ServerReleaseCastKeyPacket.TYPE,
+                ServerReleaseCastKeyPacket.STREAM_CODEC,
+                EMSServerPayloadHandler.getInstance()::handleReleaseCastKeyPacket
+        );
+
+        registrar.playToServer(ServerCycleSpellPacket.TYPE, ServerCycleSpellPacket.STREAM_CODEC, EMSServerPayloadHandler.getInstance()::handleCycleSpellPacket);
+        registrar.playToServer(ServerSetEquippedSpellPacket.TYPE, ServerSetEquippedSpellPacket.STREAM_CODEC, EMSServerPayloadHandler.getInstance()::handleSetEquippedSpellPacket);
 
     }
 }
