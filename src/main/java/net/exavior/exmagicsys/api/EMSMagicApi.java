@@ -266,6 +266,59 @@ public class EMSMagicApi {
     }
 
     /**
+     * Just like the startCasting() method before this.
+     * Though if shouldKnowSpell is false, it will cast even if the player
+     * does not know the spell.
+     *
+     * @param player The player who is casting.
+     * @param spellId The ResourceLocation of the spell to cast.
+     * @param shouldKnowSpell The boolean if the player should know the spell.
+     */
+    public static void startCasting(Player player, ResourceLocation spellId, boolean shouldKnowSpell) {
+        if (player.level().isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        ServerLevel level = serverPlayer.serverLevel();
+
+        serverPlayer.setData(EMSDataAttachments.IS_CAST_KEY_HELD.get(), true);
+
+        CastingState currentState = serverPlayer.getData(EMSDataAttachments.CASTING_STATE.get());
+        if (currentState.isCasting()) {
+            return;
+        }
+
+        Registry<Spell> spellRegistry = level.registryAccess().registryOrThrow(EMSRegistries.SPELL_REGISTRY_KEY);
+        Spell spell = spellRegistry.get(spellId);
+
+        if (spell == null) {
+            ExaviorMagicSystem.LOGGER.warn("Player {} tried to cast unknown spell: {}", player.getName().getString(), spellId);
+            return;
+        }
+
+        if (shouldKnowSpell && !EMSMagicApi.knowsSpell(serverPlayer, spellId)) {
+            return;
+        }
+
+        if (EMSMagicApi.canCastSpell(serverPlayer, spell, spellId)) {
+
+            if (spell.getChargeTimeTicks() > 0) {
+                CastingState newState = new CastingState(spellId, CastingPhase.CHARGING, level.getGameTime());
+                serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
+                EMSMagicApi.playArmPose(serverPlayer, spell.getChargeArmPose(), spell.getSpellArm());
+
+            } else if (spell.getCastTimeTicks() > 0) {
+                CastingState newState = new CastingState(spellId, CastingPhase.CASTING, level.getGameTime());
+                serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
+                EMSMagicApi.playArmPose(serverPlayer, spell.getCastArmPose(), spell.getSpellArm());
+
+            } else {
+                fireInstantSpell(serverPlayer, level, spell, spellId);
+            }
+        }
+    }
+
+    /**
      * Stops the casting process (e.g., on key release or item use stop).
      * Call this from the server-side (e.g., in an Item.releaseUsing() method).
      * This handles canceling a charge.
