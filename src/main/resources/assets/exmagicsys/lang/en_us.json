@@ -29,7 +29,8 @@
 
   "exmagicsys.feedback.no_mana": "Not enough mana.",
   "exmagicsys.feedback.on_cooldown": "Spell is on cooldown for %s seconds.",
-  "exmagicsys.feedback.no_spell_selected": "No spell equipped. Press 'X' to choose one.",
+  "exmagicsys.feedback.no_spell_selected": "No spell equipped.",
+  "exmagicsys.feedback.on_combat_cooldown": "In Combat for %s seconds.",
 
   "exmagicsys.gui.prop.classification": "Class",
   "exmagicsys.gui.prop.mana_cost": "Mana Cost",

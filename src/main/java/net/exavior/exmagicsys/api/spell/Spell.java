@@ -48,31 +48,21 @@ public abstract class Spell {
         this.activeArmPose = properties.getActiveArmPose();
     }
 
+
     /**
      * The core logic of the spell. This is what runs when the spell is cast.
      *
-     * @param level  The level the spell is cast in.
-     * @param player The player casting the spell.
-     */
-    public abstract void cast(ServerLevel level, ServerPlayer player);
-
-
-    /**
-     * Called by EMSMagicApi#fireInstantSpell(ServerPlayer player, ServerLevel level, Spell spell, ResourceLocation spellId, ItemStack stack)
-     *
      * @param level
      * @param player
-     * @param stack The stack which called the cast.
+     * @param stack
      */
-    public void cast(ServerLevel level, ServerPlayer player, ItemStack stack) {
-        player.getCooldowns().addCooldown(stack.getItem(), this.getCooldownTicks());
-    }
+    public abstract void cast(ServerLevel level, ServerPlayer player, @Nullable ItemStack stack);
 
     /**
      * Called every tick a spell is in its "ACTIVE" phase.
      * The spell is responsible for its own logic during this time.
      */
-    public void activeTick(ServerLevel level, ServerPlayer player) {
+    public void activeTick(ServerLevel level, ServerPlayer player, @Nullable ItemStack stack) {
 
     }
 

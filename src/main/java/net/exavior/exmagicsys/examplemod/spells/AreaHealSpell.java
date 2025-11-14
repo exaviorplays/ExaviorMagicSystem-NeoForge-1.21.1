@@ -8,8 +8,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class AreaHealSpell extends Spell {
@@ -24,16 +26,19 @@ public class AreaHealSpell extends Spell {
      * or particle effect.
      */
     @Override
-    public void cast(ServerLevel level, ServerPlayer player) {
+    public void cast(ServerLevel level, ServerPlayer player, @Nullable ItemStack stack) {
         // We don't need to do anything here for this spell,
         // as the healing only happens during the activeTick.
+        if (stack != null) {
+            player.getCooldowns().addCooldown(stack.getItem(), this.getCooldownTicks());
+        }
     }
 
     /**
      * This is called every tick during the ACTIVE phase.
      */
     @Override
-    public void activeTick(ServerLevel level, ServerPlayer player) {
+    public void activeTick(ServerLevel level, ServerPlayer player, @Nullable ItemStack stack) {
         // Run this every 1.0 seconds (20 ticks)
         if (level.getGameTime() % 20 == 0) {
 

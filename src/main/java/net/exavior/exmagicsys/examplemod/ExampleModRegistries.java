@@ -4,14 +4,18 @@ import net.exavior.exmagicsys.api.spell.Spell;
 import net.exavior.exmagicsys.api.spell.SpellArm;
 import net.exavior.exmagicsys.api.spell.SpellClassification;
 import net.exavior.exmagicsys.api.spell.SpellProperties;
+import net.exavior.exmagicsys.examplemod.item.custom.AreaHealCastingSpellItem;
+import net.exavior.exmagicsys.examplemod.item.custom.FireballCastingSpellItem;
 import net.exavior.exmagicsys.examplemod.spells.FireballMinigunSpell;
 import net.exavior.exmagicsys.registry.EMSRegistries;
 import net.exavior.exmagicsys.examplemod.spells.AreaHealSpell;
 import net.exavior.exmagicsys.examplemod.spells.FireballSpell;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /***
@@ -21,11 +25,22 @@ public class ExampleModRegistries {
 
     public static final String EXAMPLE_MODID = "examplemod";
 
+    public static final DeferredRegister.Items ITEMS =
+            DeferredRegister.createItems(EXAMPLE_MODID);
+
     public static final DeferredRegister<Spell> SPELLS =
             DeferredRegister.create(EMSRegistries.SPELL_REGISTRY_KEY, EXAMPLE_MODID);
 
     public static final DeferredRegister<SpellClassification> SPELL_CLASSIFICATIONS =
             DeferredRegister.create(EMSRegistries.CLASSIFICATION_REGISTRY_KEY, EXAMPLE_MODID);
+
+
+    public static final DeferredItem<Item> FIREBALL_CASTING_SPELL_ITEM = ITEMS.register("fireball_casting_spell_item",
+            () -> new FireballCastingSpellItem(new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<Item> AREA_HEAL_CASTING_SPELL_ITEM = ITEMS.register("area_heal_casting_spell_item",
+            () -> new AreaHealCastingSpellItem(new Item.Properties().stacksTo(1)));
+
 
     // --- Fire Example Classification ---
     public static final DeferredHolder<SpellClassification, SpellClassification> EXAMPLE_CLASSIFICATION_FIRE =
@@ -85,6 +100,7 @@ public class ExampleModRegistries {
 
 
     public static void register(IEventBus eventBus) {
+        ITEMS.register(eventBus);
         SPELLS.register(eventBus);
         SPELL_CLASSIFICATIONS.register(eventBus);
     }

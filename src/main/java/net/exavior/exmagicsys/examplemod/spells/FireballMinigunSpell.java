@@ -8,7 +8,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 public class FireballMinigunSpell extends Spell {
     public FireballMinigunSpell(SpellProperties properties) {
@@ -16,12 +19,14 @@ public class FireballMinigunSpell extends Spell {
     }
 
     @Override
-    public void cast(ServerLevel level, ServerPlayer player) {
-
+    public void cast(ServerLevel level, ServerPlayer player, @Nullable ItemStack stack) {
+        if (stack != null) {
+            player.getCooldowns().addCooldown(stack.getItem(), this.getCooldownTicks());
+        }
     }
 
     @Override
-    public void activeTick(ServerLevel level, ServerPlayer player) {
+    public void activeTick(ServerLevel level, ServerPlayer player, @Nullable ItemStack stack) {
         if (level.getGameTime() % 2 == 0) {
             if (EMSMagicApi.consumeActiveTickMana(player, this)) {
                 Vec3 look = player.getLookAngle();
@@ -41,7 +46,7 @@ public class FireballMinigunSpell extends Spell {
 
                 level.playSound(null, player.blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.4F, 1.2F);
 
-                super.activeTick(level, player);
+                super.activeTick(level, player, stack);
             }
         }
     }

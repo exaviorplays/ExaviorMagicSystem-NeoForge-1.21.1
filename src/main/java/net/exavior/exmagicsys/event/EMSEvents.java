@@ -3,6 +3,8 @@ package net.exavior.exmagicsys.event;
 import net.exavior.exmagicsys.EMSConfig;
 import net.exavior.exmagicsys.ExaviorMagicSystem;
 import net.exavior.exmagicsys.api.EMSMagicApi;
+import net.exavior.exmagicsys.api.event.OpenSpellGuiEvent;
+import net.exavior.exmagicsys.api.spell.CastSource;
 import net.exavior.exmagicsys.api.spell.Spell;
 import net.exavior.exmagicsys.command.SpellCommand;
 import net.exavior.exmagicsys.data.CastingPhase;
@@ -11,11 +13,14 @@ import net.exavior.exmagicsys.examplemod.ExampleModRegistries;
 import net.exavior.exmagicsys.registry.EMSDataAttachments;
 import net.exavior.exmagicsys.registry.EMSRegistries;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -60,10 +65,41 @@ public class EMSEvents {
     }
 
     @SubscribeEvent
+    public static void onCombatCooldown(OpenSpellGuiEvent event) {
+        if (event.getPlayer() instanceof Player player) {
+            if (player.hasInfiniteMaterials()) {
+                return;
+            }
+
+            long gameTime = player.level().getGameTime();
+
+            long cooldownFinished = player.getData(EMSDataAttachments.COMBAT_COOLDOWN_UNTIL.get());
+            if (gameTime < cooldownFinished) {
+                long ticksRemaining = cooldownFinished - gameTime;
+                player.displayClientMessage(Component.translatable("exmagicsys.feedback.on_combat_cooldown", String.format("%.1f", ticksRemaining / 20.0f)), true);
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onCombatStart(LivingIncomingDamageEvent event) {
+        if (event.getSource().getEntity() != null && event.getEntity() instanceof ServerPlayer player) {
+            EMSMagicApi.triggerCombatCooldown(player);
+        }
+        else if (event.getSource().getDirectEntity() instanceof ServerPlayer player) {
+            EMSMagicApi.triggerCombatCooldown(player);
+        }
+        else if (event.getSource().getEntity() instanceof ServerPlayer player) {
+            EMSMagicApi.triggerCombatCooldown(player);
+        }
+    }
+
+
+    @SubscribeEvent
     public static void onPlayerPostTick(PlayerTickEvent.Post event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             handleManaRegen(player);
-
             handleCasting(player);
         }
     }
@@ -97,14 +133,12 @@ public class EMSEvents {
 
     private static void handleCasting(ServerPlayer player) {
         CastingState currentState = player.getData(EMSDataAttachments.CASTING_STATE.get());
-
         if (!currentState.isCasting()) {
             return;
         }
 
         ServerLevel level = player.serverLevel();
         long gameTime = level.getGameTime();
-
         Registry<Spell> spellRegistry = level.registryAccess().registryOrThrow(EMSRegistries.SPELL_REGISTRY_KEY);
         Spell spell = spellRegistry.get(currentState.spellId());
 
@@ -118,7 +152,7 @@ public class EMSEvents {
 
         if (currentState.phase() == CastingPhase.CHARGING) {
             if (timeElapsed >= spell.getChargeTimeTicks()) {
-                CastingState newState = new CastingState(currentState.spellId(), CastingPhase.CASTING, gameTime);
+                CastingState newState = new CastingState(currentState.spellId(), CastingPhase.CASTING, gameTime, currentState.source(), currentState.hand());
                 player.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
                 EMSMagicApi.playArmPose(player, spell.getCastArmPose(), spell.getSpellArm());
             }
@@ -130,32 +164,59 @@ public class EMSEvents {
                     EMSMagicApi.stopArmPose(player);
                     return;
                 }
+
+                boolean isHolding = false;
+                if (currentState.source() == CastSource.KEYBIND) {
+                    isHolding = player.getData(EMSDataAttachments.IS_CAST_KEY_HELD.get());
+                } else if (currentState.source() == CastSource.ITEM) {
+                    isHolding = player.isUsingItem() && player.getUsedItemHand() == currentState.hand();
+                }
+
                 EMSMagicApi.applySpellCosts(player, spell, currentState.spellId());
-                boolean canStartActive = spell.getActiveTimeTicks() > 0 &&
-                        player.getData(EMSDataAttachments.IS_CAST_KEY_HELD.get());
+                boolean canStartActive = spell.getActiveTimeTicks() > 0 && isHolding;
+
                 if (canStartActive) {
-                    CastingState newState = new CastingState(currentState.spellId(), CastingPhase.ACTIVE, gameTime);
+                    CastingState newState = new CastingState(currentState.spellId(), CastingPhase.ACTIVE, gameTime, currentState.source(), currentState.hand());
                     player.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
-                    spell.cast(level, player);
+                    if(currentState.source() == CastSource.ITEM) {
+                        spell.cast(level, player, player.getItemInHand(currentState.hand()));
+                    } else {
+                        spell.cast(level, player, null);
+                    }
                     EMSMagicApi.playArmPose(player, spell.getActiveArmPose(), spell.getSpellArm());
                 } else {
-                    spell.cast(level, player);
+                    if(currentState.source() == CastSource.ITEM) {
+                        spell.cast(level, player, player.getItemInHand(currentState.hand()));
+                    } else {
+                        spell.cast(level, player, null);
+                    }
                     player.setData(EMSDataAttachments.CASTING_STATE.get(), CastingState.NONE);
                     EMSMagicApi.stopArmPose(player);
                 }
             }
 
         } else if (currentState.phase() == CastingPhase.ACTIVE) {
-            boolean isTimeUp = timeElapsed >= spell.getActiveTimeTicks();
-            boolean isKeyReleased = !player.getData(EMSDataAttachments.IS_CAST_KEY_HELD.get());
+            boolean isReleased = false;
+            if (currentState.source() == CastSource.KEYBIND) {
+                isReleased = !player.getData(EMSDataAttachments.IS_CAST_KEY_HELD.get());
+            } else if (currentState.source() == CastSource.ITEM) {
+                isReleased = !player.isUsingItem() || player.getUsedItemHand() != currentState.hand();
+            }
 
-            if (isTimeUp || isKeyReleased) {
+            boolean isTimeUp = timeElapsed >= spell.getActiveTimeTicks();
+
+            if (isTimeUp || isReleased) {
                 player.setData(EMSDataAttachments.CASTING_STATE.get(), CastingState.NONE);
                 EMSMagicApi.stopArmPose(player);
                 return;
             }
+
             if (EMSMagicApi.hasEnoughManaForActiveTick(player, spell)) {
-                spell.activeTick(level, player);
+                if(currentState.source() == CastSource.ITEM) {
+                    spell.activeTick(level, player, player.getItemInHand(currentState.hand()));
+                } else {
+                    spell.activeTick(level, player, null);
+                }
             } else {
                 player.setData(EMSDataAttachments.CASTING_STATE.get(), CastingState.NONE);
                 EMSMagicApi.stopArmPose(player);

@@ -151,6 +151,13 @@ public class EMSDataAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<Long>> COMBAT_COOLDOWN_UNTIL = ATTACHMENT_TYPES.register(
+            "combat_cooldown_until", () -> AttachmentType.builder(() -> 0L)
+                    .serialize(Codec.LONG)
+                    .sync(LONG_STREAM_CODEC)
+                    .build()
+    );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

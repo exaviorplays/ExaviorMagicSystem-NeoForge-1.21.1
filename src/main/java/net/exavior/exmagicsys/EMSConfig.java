@@ -45,6 +45,7 @@ public class EMSConfig {
         public final ModConfigSpec.BooleanValue manaDecreaseCauseCooldown;
         public final ModConfigSpec.IntValue manaRegenCooldown;
         public final ModConfigSpec.IntValue manaTickRegen;
+        public final ModConfigSpec.IntValue combatCooldown;
 
         SERVER(ModConfigSpec.Builder builder) {
             builder.comment("Server Configuration Settings")
@@ -65,6 +66,10 @@ public class EMSConfig {
             manaTickRegen = builder
                     .comment("\n How many ticks per mana. 20 ticks = 1 second.")
                     .defineInRange("mana_tick_regen", 10, 0, 1200);
+
+            combatCooldown = builder
+                    .comment("\n How long the cooldown is when the player enters combat. 20 ticks = 1 second.")
+                    .defineInRange("combat_cooldown", 1200, 0, 3600);
 
             builder.pop();
         }
