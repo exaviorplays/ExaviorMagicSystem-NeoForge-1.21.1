@@ -21,6 +21,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.logging.Level;
 
 public class EMSMagicApi {
 
@@ -184,6 +185,16 @@ public class EMSMagicApi {
             return spells.get(slot);
         }
         return null;
+    }
+
+    /**
+     * Gets the spell from the Spell Id.
+     */
+    public static Spell getSpell(ServerLevel level, ResourceLocation spellId) {
+        Registry<Spell> spellRegistry = level.registryAccess().registryOrThrow(EMSRegistries.SPELL_REGISTRY_KEY);
+        Spell spell = spellRegistry.get(spellId);
+
+        return spell;
     }
 
     /**
