@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -330,6 +331,55 @@ public class EMSMagicApi {
     }
 
     /**
+     * Itemstack as parameter
+     * Calls @see fireInstantSpell with included ItemStack
+     * @see EMSMagicApi#fireInstantSpell(ServerPlayer, ServerLevel, Spell, ResourceLocation, ItemStack)
+     */
+    public static void startCasting(Player player, ResourceLocation spellId, ItemStack stack, boolean shouldKnowSpell) {
+        if (player.level().isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        ServerLevel level = serverPlayer.serverLevel();
+
+        serverPlayer.setData(EMSDataAttachments.IS_CAST_KEY_HELD.get(), true);
+
+        CastingState currentState = serverPlayer.getData(EMSDataAttachments.CASTING_STATE.get());
+        if (currentState.isCasting()) {
+            return;
+        }
+
+        Registry<Spell> spellRegistry = level.registryAccess().registryOrThrow(EMSRegistries.SPELL_REGISTRY_KEY);
+        Spell spell = spellRegistry.get(spellId);
+
+        if (spell == null) {
+            ExaviorMagicSystem.LOGGER.warn("Player {} tried to cast unknown spell: {}", player.getName().getString(), spellId);
+            return;
+        }
+
+        if (shouldKnowSpell && !EMSMagicApi.knowsSpell(serverPlayer, spellId)) {
+            return;
+        }
+
+        if (EMSMagicApi.canCastSpell(serverPlayer, spell, spellId)) {
+
+            if (spell.getChargeTimeTicks() > 0) {
+                CastingState newState = new CastingState(spellId, CastingPhase.CHARGING, level.getGameTime());
+                serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
+                EMSMagicApi.playArmPose(serverPlayer, spell.getChargeArmPose(), spell.getSpellArm());
+
+            } else if (spell.getCastTimeTicks() > 0) {
+                CastingState newState = new CastingState(spellId, CastingPhase.CASTING, level.getGameTime());
+                serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
+                EMSMagicApi.playArmPose(serverPlayer, spell.getCastArmPose(), spell.getSpellArm());
+
+            } else {
+                fireInstantSpell(serverPlayer, level, spell, spellId, stack);
+            }
+        }
+    }
+
+    /**
      * Stops the casting process (e.g., on key release or item use stop).
      * Call this from the server-side (e.g., in an Item.releaseUsing() method).
      * This handles canceling a charge.
@@ -456,6 +506,13 @@ public class EMSMagicApi {
     private static void fireInstantSpell(ServerPlayer player, ServerLevel level, Spell spell, ResourceLocation spellId) {
         if (EMSMagicApi.canCastSpell(player, spell, spellId)) {
             spell.cast(level, player);
+            EMSMagicApi.applySpellCosts(player, spell, spellId);
+        }
+    }
+
+    private static void fireInstantSpell(ServerPlayer player, ServerLevel level, Spell spell, ResourceLocation spellId, ItemStack stack) {
+        if (EMSMagicApi.canCastSpell(player, spell, spellId)) {
+            spell.cast(level, player, stack);
             EMSMagicApi.applySpellCosts(player, spell, spellId);
         }
     }

@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
  */
 public record CastingState(ResourceLocation spellId, CastingPhase phase, long startTime) {
 
-    // A Codec to allow this record to be serialized for the DataAttachment
     public static final Codec<CastingState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("spell_id").forGetter(CastingState::spellId),
             CastingPhase.CODEC.fieldOf("phase").forGetter(CastingState::phase),

@@ -4,6 +4,7 @@ import net.exavior.exmagicsys.EMSConfig;
 import net.exavior.exmagicsys.ExaviorMagicSystem;
 import net.exavior.exmagicsys.api.EMSMagicApi;
 import net.exavior.exmagicsys.api.spell.Spell;
+import net.exavior.exmagicsys.command.SpellCommand;
 import net.exavior.exmagicsys.data.CastingPhase;
 import net.exavior.exmagicsys.data.CastingState;
 import net.exavior.exmagicsys.examplemod.ExampleModRegistries;
@@ -14,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -39,6 +41,11 @@ public class EMSEvents {
             //EMSMagicApi.learnSpell(player, ExampleModRegistries.EXAMPLE_AREA_HEAL_SPELL.getId());
             //EMSMagicApi.learnSpell(player, ExampleModRegistries.EXAMPLE_FIREBALL_MINIGUN_SPELL.getId());
         }
+    }
+
+    @SubscribeEvent
+    public static void onRegisterCommands(RegisterCommandsEvent event) {
+        SpellCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

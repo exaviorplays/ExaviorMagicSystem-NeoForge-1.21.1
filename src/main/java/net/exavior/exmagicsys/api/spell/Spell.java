@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -54,6 +55,18 @@ public abstract class Spell {
      * @param player The player casting the spell.
      */
     public abstract void cast(ServerLevel level, ServerPlayer player);
+
+
+    /**
+     * Called by EMSMagicApi#fireInstantSpell(ServerPlayer player, ServerLevel level, Spell spell, ResourceLocation spellId, ItemStack stack)
+     *
+     * @param level
+     * @param player
+     * @param stack The stack which called the cast.
+     */
+    public void cast(ServerLevel level, ServerPlayer player, ItemStack stack) {
+        player.getCooldowns().addCooldown(stack.getItem(), this.getCooldownTicks());
+    }
 
     /**
      * Called every tick a spell is in its "ACTIVE" phase.

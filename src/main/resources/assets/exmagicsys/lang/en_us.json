@@ -39,5 +39,15 @@
   "exmagicsys.gui.prop.active_time": "Active Time",
   "exmagicsys.gui.prop.active_mana_cost": "Active Cost",
   "exmagicsys.gui.prop.seconds": "s",
-  "exmagicsys.gui.prop.ticks": "t"
+  "exmagicsys.gui.prop.ticks": "t",
+
+  "exmagicsys.command.error.unknown_spell": "Unknown spell: %s",
+  "exmagicsys.command.error.unlearnable": "Spell %s cannot be learned",
+  "exmagicsys.command.learn.success.single": "Gave spell %s to %s",
+  "exmagicsys.command.learn.success.multiple": "Gave spell %s to %s players",
+  "exmagicsys.command.unlearn.failure": "No player had the spell %s",
+  "exmagicsys.command.unlearn.success.single": "Removed spell %s from %s",
+  "exmagicsys.command.unlearn.success.multiple": "Removed spell %s from %s players",
+  "exmagicsys.command.unlearn_all.success.single": "Removed all spells from %s",
+  "exmagicsys.command.unlearn_all.success.multiple": "Removed all spells from %s players"
 }

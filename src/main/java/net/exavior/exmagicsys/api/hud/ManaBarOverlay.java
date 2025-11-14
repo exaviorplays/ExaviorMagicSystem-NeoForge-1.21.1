@@ -100,7 +100,7 @@ public class ManaBarOverlay {
         Registry<Spell> spellRegistry = mc.player.level().registryAccess().registryOrThrow(EMSRegistries.SPELL_REGISTRY_KEY);
         long gameTime = mc.level.getGameTime();
 
-        if (spells == null || spells.size() != 4) return; // Data not loaded yet
+        if (spells == null || spells.size() != 4) return;
 
         int totalSlotsWidth = (SLOT_BOX_SIZE * 4) + (SLOT_BOX_PADDING * 3);
         int slotsX = barX + (BAR_WIDTH / 2) - (totalSlotsWidth / 2);
