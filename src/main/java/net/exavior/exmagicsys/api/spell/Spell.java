@@ -66,6 +66,14 @@ public abstract class Spell {
 
     }
 
+    public void chargeTick(ServerLevel level, ServerPlayer player) {
+
+    }
+
+    public void castTick(ServerLevel level, ServerPlayer player) {
+
+    }
+
     public Holder<SpellClassification> getClassification() {
         return classification;
     }

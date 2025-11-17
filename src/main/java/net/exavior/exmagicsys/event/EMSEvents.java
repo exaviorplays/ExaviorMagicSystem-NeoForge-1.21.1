@@ -155,6 +155,7 @@ public class EMSEvents {
                 CastingState newState = new CastingState(currentState.spellId(), CastingPhase.CASTING, gameTime, currentState.source(), currentState.hand());
                 player.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
                 EMSMagicApi.playArmPose(player, spell.getCastArmPose(), spell.getSpellArm());
+                spell.chargeTick(level, player);
             }
 
         } else if (currentState.phase() == CastingPhase.CASTING) {
@@ -194,6 +195,7 @@ public class EMSEvents {
                     EMSMagicApi.stopArmPose(player);
                 }
             }
+            spell.castTick(level, player);
 
         } else if (currentState.phase() == CastingPhase.ACTIVE) {
             boolean isReleased = false;
