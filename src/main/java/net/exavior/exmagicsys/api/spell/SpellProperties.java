@@ -1,8 +1,10 @@
 package net.exavior.exmagicsys.api.spell;
 
+import net.exavior.exmagicsys.api.client.SpellAnimations;
 import net.exavior.exmagicsys.registry.EMSRegistries;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class SpellProperties {
@@ -16,12 +18,9 @@ public class SpellProperties {
     private boolean unlearnable = false;
 
     private SpellArm spellArm = SpellArm.MAIN_HAND;
-    @Nullable
-    private HumanoidModel.ArmPose chargeArmPose = null;
-    @Nullable
-    private HumanoidModel.ArmPose castArmPose = null;
-    @Nullable
-    private HumanoidModel.ArmPose activeArmPose = null;
+    @Nullable private ResourceLocation chargeAnim = null;
+    @Nullable private ResourceLocation castAnim = null;
+    @Nullable private ResourceLocation activeAnim = null;
 
 
     // By default, a spell has no classification.
@@ -78,32 +77,9 @@ public class SpellProperties {
         return this;
     }
 
-    /**
-     * Sets the ArmPose to play during the CHARGING phase.
-     * e.g., HumanoidModel.ArmPose.BOW_AND_ARROW
-     */
-    public SpellProperties chargeArmPose(@Nullable HumanoidModel.ArmPose pose) {
-        this.chargeArmPose = pose;
-        return this;
-    }
-
-    /**
-     * Sets the ArmPose to play during the CASTING phase.
-     * e.g., HumanoidModel.ArmPose.THROW_SPEAR
-     */
-    public SpellProperties castArmPose(@Nullable HumanoidModel.ArmPose pose) {
-        this.castArmPose = pose;
-        return this;
-    }
-
-    /**
-     * Sets the ArmPose to play during the ACTIVE phase.
-     * e.g., HumanoidModel.ArmPose.BLOCK
-     */
-    public SpellProperties activeArmPose(@Nullable HumanoidModel.ArmPose pose) {
-        this.activeArmPose = pose;
-        return this;
-    }
+    public SpellProperties chargeAnim(ResourceLocation animId) { this.chargeAnim = animId; return this; }
+    public SpellProperties castAnim(ResourceLocation animId) { this.castAnim = animId; return this; }
+    public SpellProperties activeAnim(ResourceLocation animId) { this.activeAnim = animId; return this; }
 
     public Holder<SpellClassification> getClassification() {
         return classification;
@@ -141,18 +117,9 @@ public class SpellProperties {
         return this.unlearnable;
     }
 
-    @Nullable
-    public HumanoidModel.ArmPose getChargeArmPose() {
-        return chargeArmPose;
-    }
+    @Nullable public ResourceLocation getChargeAnim() { return chargeAnim; }
 
-    @Nullable
-    public HumanoidModel.ArmPose getCastArmPose() {
-        return castArmPose;
-    }
+    @Nullable public ResourceLocation getCastAnim() { return castAnim; }
 
-    @Nullable
-    public HumanoidModel.ArmPose getActiveArmPose() {
-        return activeArmPose;
-    }
+    @Nullable public ResourceLocation getActiveAnim() { return activeAnim; }
 }

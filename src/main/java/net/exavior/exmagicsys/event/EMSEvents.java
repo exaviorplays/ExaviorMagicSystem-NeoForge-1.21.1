@@ -154,7 +154,7 @@ public class EMSEvents {
             if (timeElapsed >= spell.getChargeTimeTicks()) {
                 CastingState newState = new CastingState(currentState.spellId(), CastingPhase.CASTING, gameTime, currentState.source(), currentState.hand());
                 player.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
-                EMSMagicApi.playArmPose(player, spell.getCastArmPose(), spell.getSpellArm());
+                EMSMagicApi.playArmPose(player, spell.getCastAnim(), spell.getSpellArm());
             }
             spell.chargeTick(level, player);
 
@@ -184,7 +184,7 @@ public class EMSEvents {
                     } else {
                         spell.cast(level, player, null);
                     }
-                    EMSMagicApi.playArmPose(player, spell.getActiveArmPose(), spell.getSpellArm());
+                    EMSMagicApi.playArmPose(player, spell.getActiveAnim(), spell.getSpellArm());
                 } else {
                     if(currentState.source() == CastSource.ITEM) {
                         spell.cast(level, player, player.getItemInHand(currentState.hand()));

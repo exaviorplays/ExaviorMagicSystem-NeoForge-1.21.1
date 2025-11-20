@@ -1,12 +1,15 @@
 package net.exavior.exmagicsys.event;
 
 import net.exavior.exmagicsys.ExaviorMagicSystem;
+import net.exavior.exmagicsys.api.client.SpellAnimation;
+import net.exavior.exmagicsys.api.client.SpellAnimations;
 import net.exavior.exmagicsys.api.spell.SpellArm;
 import net.exavior.exmagicsys.registry.EMSDataAttachments;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,29 +21,30 @@ public class EMSRenderEvents {
 
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
-        AbstractClientPlayer player = Minecraft.getInstance().player;
+        AbstractClientPlayer player = (AbstractClientPlayer) event.getEntity();
 
-        if (player == null) return;
+        ResourceLocation animId = player.getData(EMSDataAttachments.CLIENT_SPELL_ARM_POSE.get());
+        if (animId == null) return;
 
-        HumanoidModel.ArmPose pose = player.getData(EMSDataAttachments.CLIENT_SPELL_ARM_POSE.get());
         SpellArm spellArm = player.getData(EMSDataAttachments.CLIENT_SPELL_ARM.get());
+        long startTime = player.getData(EMSDataAttachments.CLIENT_ANIM_START_TIME.get());
 
-        if (pose == HumanoidModel.ArmPose.EMPTY) {
-            return;
-        }
+        float ticksElapsed = (player.tickCount - startTime);
+
+        SpellAnimation animation = SpellAnimations.get(animId);
 
         PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
         HumanoidArm mainArm = player.getMainArm();
 
         if (spellArm == SpellArm.MAIN_HAND) {
-            if (mainArm == HumanoidArm.RIGHT) model.rightArmPose = pose;
-            else model.leftArmPose = pose;
+            animation.apply(model, player, mainArm, ticksElapsed, event.getPartialTick());
+
         } else if (spellArm == SpellArm.OFF_HAND) {
-            if (mainArm == HumanoidArm.RIGHT) model.leftArmPose = pose;
-            else model.rightArmPose = pose;
+            animation.apply(model, player, mainArm.getOpposite(), ticksElapsed, event.getPartialTick());
+
         } else if (spellArm == SpellArm.BOTH) {
-            model.rightArmPose = pose;
-            model.leftArmPose = pose;
+            animation.apply(model, player, HumanoidArm.RIGHT, ticksElapsed, event.getPartialTick());
+            animation.apply(model, player, HumanoidArm.LEFT, ticksElapsed, event.getPartialTick());
         }
     }
 }

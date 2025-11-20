@@ -25,12 +25,9 @@ public abstract class Spell {
     private final int manaCostPerActiveTick;
     private final SpellArm spellArm;
     private final boolean unlearnable;
-    @Nullable
-    private final HumanoidModel.ArmPose chargeArmPose;
-    @Nullable
-    private final HumanoidModel.ArmPose castArmPose;
-    @Nullable
-    private final HumanoidModel.ArmPose activeArmPose;
+    @Nullable private final ResourceLocation chargeAnim;
+    @Nullable private final ResourceLocation castAnim;
+    @Nullable private final ResourceLocation activeAnim;
 
 
     public Spell(SpellProperties properties) {
@@ -43,9 +40,9 @@ public abstract class Spell {
         this.manaCostPerActiveTick = properties.getManaCostPerActiveTick();
         this.unlearnable = properties.isUnlearnable();
         this.spellArm = properties.getSpellArm();
-        this.chargeArmPose = properties.getChargeArmPose();
-        this.castArmPose = properties.getCastArmPose();
-        this.activeArmPose = properties.getActiveArmPose();
+        this.chargeAnim = properties.getChargeAnim();
+        this.castAnim = properties.getCastAnim();
+        this.activeAnim = properties.getActiveAnim();
     }
 
 
@@ -110,18 +107,9 @@ public abstract class Spell {
         return this.unlearnable;
     }
 
-    @Nullable
-    public HumanoidModel.ArmPose getChargeArmPose() {
-        return chargeArmPose;
-    }
+    @Nullable public ResourceLocation getChargeAnim() { return chargeAnim; }
 
-    @Nullable
-    public HumanoidModel.ArmPose getCastArmPose() {
-        return castArmPose;
-    }
+    @Nullable public ResourceLocation getCastAnim() { return castAnim; }
 
-    @Nullable
-    public HumanoidModel.ArmPose getActiveArmPose() {
-        return activeArmPose;
-    }
+    @Nullable public ResourceLocation getActiveAnim() { return activeAnim; }
 }

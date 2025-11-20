@@ -137,12 +137,18 @@ public class EMSDataAttachments {
                     .build()
     );
 
-    public static final Supplier<AttachmentType<HumanoidModel.ArmPose>> CLIENT_SPELL_ARM_POSE = ATTACHMENT_TYPES.register(
-            "client_spell_arm_pose", () -> AttachmentType.builder(() -> HumanoidModel.ArmPose.EMPTY).build()
+    public static final Supplier<AttachmentType<ResourceLocation>> CLIENT_SPELL_ARM_POSE = ATTACHMENT_TYPES.register(
+            "client_spell_arm_pose", () -> AttachmentType.builder(
+                    (Supplier<ResourceLocation>) () -> null
+            ).build()
     );
 
     public static final Supplier<AttachmentType<SpellArm>> CLIENT_SPELL_ARM = ATTACHMENT_TYPES.register(
             "client_spell_arm", () -> AttachmentType.builder(() -> SpellArm.MAIN_HAND).build()
+    );
+
+    public static final Supplier<AttachmentType<Long>> CLIENT_ANIM_START_TIME = ATTACHMENT_TYPES.register(
+            "client_anim_start_time", () -> AttachmentType.builder(() -> 0L).build()
     );
 
     public static final Supplier<AttachmentType<Long>> MANA_REGEN_COOLDOWN_UNTIL = ATTACHMENT_TYPES.register(

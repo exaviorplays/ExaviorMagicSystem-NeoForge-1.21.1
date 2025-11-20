@@ -1,5 +1,6 @@
 package net.exavior.exmagicsys.examplemod;
 
+import net.exavior.exmagicsys.api.client.SpellAnimations;
 import net.exavior.exmagicsys.api.spell.Spell;
 import net.exavior.exmagicsys.api.spell.SpellArm;
 import net.exavior.exmagicsys.api.spell.SpellClassification;
@@ -64,7 +65,7 @@ public class ExampleModRegistries {
                             .castTimeTicks(10) // Casts after 0.5 seconds
                             .chargeTimeTicks(0) // No charge
                             .spellArm(SpellArm.MAIN_HAND)
-                            .castArmPose(HumanoidModel.ArmPose.BOW_AND_ARROW) // Pose like a bow
+                            .castAnim(SpellAnimations.THRUST)
                     )
             );
 
@@ -78,6 +79,9 @@ public class ExampleModRegistries {
                             .chargeTimeTicks(100)
                             .activeTimeTicks(300)
                             .manaCostPerActiveTick(3)
+                            .spellArm(SpellArm.MAIN_HAND)
+                            .chargeAnim(SpellAnimations.TWIRL)
+                            .activeAnim(SpellAnimations.BOW)
                     )
             );
 
@@ -93,8 +97,8 @@ public class ExampleModRegistries {
                             .activeTimeTicks(200) // 10 seconds of active time
                             .manaCostPerActiveTick(5) // Consumed every time MagicApi.consumeActiveTickMana() is called
                             .spellArm(SpellArm.BOTH) // Use both arms
-                            .chargeArmPose(HumanoidModel.ArmPose.BRUSH) // Charging pose
-                            .activeArmPose(HumanoidModel.ArmPose.BLOCK)
+                            .chargeAnim(SpellAnimations.TWIRL)
+                            .activeAnim(SpellAnimations.BLOCK)
                     )
             );
 

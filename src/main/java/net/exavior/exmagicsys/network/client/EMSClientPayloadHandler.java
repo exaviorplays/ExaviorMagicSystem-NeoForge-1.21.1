@@ -21,8 +21,9 @@
             context.enqueueWork(() -> {
                 Player player = Minecraft.getInstance().player;
                 if (player != null) {
-                    player.setData(EMSDataAttachments.CLIENT_SPELL_ARM_POSE.get(), packet.pose());
+                    player.setData(EMSDataAttachments.CLIENT_SPELL_ARM_POSE.get(), packet.animId());
                     player.setData(EMSDataAttachments.CLIENT_SPELL_ARM.get(), packet.arm());
+                    player.setData(EMSDataAttachments.CLIENT_ANIM_START_TIME.get(), (long) player.tickCount);
                 }
             });
         }
@@ -33,6 +34,7 @@
                 if (player != null) {
                     player.removeData(EMSDataAttachments.CLIENT_SPELL_ARM_POSE.get());
                     player.removeData(EMSDataAttachments.CLIENT_SPELL_ARM.get());
+                    player.removeData(EMSDataAttachments.CLIENT_ANIM_START_TIME.get());
                 }
             });
         }

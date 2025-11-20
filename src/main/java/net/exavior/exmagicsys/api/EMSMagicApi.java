@@ -272,11 +272,11 @@ public class EMSMagicApi {
             if (spell.getChargeTimeTicks() > 0) {
                 CastingState newState = new CastingState(spellId, CastingPhase.CHARGING, level.getGameTime(), source, hand);
                 serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
-                EMSMagicApi.playArmPose(serverPlayer, spell.getChargeArmPose(), spell.getSpellArm());
+                EMSMagicApi.playArmPose(serverPlayer, spell.getChargeAnim(), spell.getSpellArm());
             } else if (spell.getCastTimeTicks() > 0) {
                 CastingState newState = new CastingState(spellId, CastingPhase.CASTING, level.getGameTime(), source, hand);
                 serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
-                EMSMagicApi.playArmPose(serverPlayer, spell.getCastArmPose(), spell.getSpellArm());
+                EMSMagicApi.playArmPose(serverPlayer, spell.getCastAnim(), spell.getSpellArm());
             } else {
                 // Instant cast
                 fireInstantSpell(serverPlayer, level, spell, spellId, (source == CastSource.ITEM) ? player.getItemInHand(hand) : ItemStack.EMPTY);
@@ -412,12 +412,11 @@ public class EMSMagicApi {
     }
 
     /**
-     * Tells a player's client to play a spell ArmPose.
-     * If pose is null, it stops the pose instead.
+     * Tells a player's client to play a spell animation.
      */
-    public static void playArmPose(ServerPlayer player, @Nullable HumanoidModel.ArmPose pose, SpellArm arm) {
-        if (pose != null) {
-            PacketDistributor.sendToPlayer(player, new ClientSetArmPosePacket(pose, arm));
+    public static void playArmPose(ServerPlayer player, @Nullable ResourceLocation animId, SpellArm arm) {
+        if (animId != null) {
+            PacketDistributor.sendToPlayer(player, new ClientSetArmPosePacket(animId, arm));
         } else {
             stopArmPose(player);
         }
