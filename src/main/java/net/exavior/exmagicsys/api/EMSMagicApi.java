@@ -414,19 +414,17 @@ public class EMSMagicApi {
     /**
      * Tells a player's client to play a spell animation.
      */
-    public static void playArmPose(ServerPlayer player, @Nullable ResourceLocation animId, SpellArm arm) {
-        if (animId != null) {
-            PacketDistributor.sendToPlayer(player, new ClientSetArmPosePacket(animId, arm));
-        } else {
-            stopArmPose(player);
-        }
+    public static void playArmPose(ServerPlayer player, ResourceLocation animId, SpellArm arm) {
+        ClientSetArmPosePacket packet = new ClientSetArmPosePacket(player.getId(), animId, arm);
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, packet);
     }
 
     /**
      * Tells a player's client to stop forcing an ArmPose.
      */
     public static void stopArmPose(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, new ClientClearArmPosePacket());
+        ClientClearArmPosePacket packet = new ClientClearArmPosePacket(player.getId());
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, packet);
     }
 
     /**
@@ -452,6 +450,11 @@ public class EMSMagicApi {
                 spell.cast(level, player, stack);
             }
             EMSMagicApi.applySpellCosts(player, spell, spellId);
+
+            if (spell.getCastAnim() != null) {
+                playArmPose(player, spell.getCastAnim(), spell.getSpellArm());
+                CastingState animState = new CastingState(spellId, CastingPhase.CASTING, player.level().getGameTime(), CastSource.KEYBIND, null);
+            }
         }
     }
 

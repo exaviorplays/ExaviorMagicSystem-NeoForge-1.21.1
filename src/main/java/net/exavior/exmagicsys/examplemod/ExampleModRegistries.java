@@ -65,7 +65,7 @@ public class ExampleModRegistries {
                             .castTimeTicks(10) // Casts after 0.5 seconds
                             .chargeTimeTicks(0) // No charge
                             .spellArm(SpellArm.MAIN_HAND)
-                            .castAnim(SpellAnimations.THRUST)
+                            .castAnim(SpellAnimations.SWIPE_HORIZONTAL)
                     )
             );
 
@@ -81,7 +81,7 @@ public class ExampleModRegistries {
                             .manaCostPerActiveTick(3)
                             .spellArm(SpellArm.MAIN_HAND)
                             .chargeAnim(SpellAnimations.TWIRL)
-                            .activeAnim(SpellAnimations.BOW)
+                            .activeAnim(SpellAnimations.THRUST_HOLD)
                     )
             );
 

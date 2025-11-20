@@ -1,67 +1,45 @@
-    package net.exavior.exmagicsys.network.client;
+package net.exavior.exmagicsys.network.client;
 
-    import net.exavior.exmagicsys.ExaviorMagicSystem;
-    import net.exavior.exmagicsys.network.server.toclientpackets.ClientClearArmPosePacket;
-    import net.exavior.exmagicsys.network.server.toclientpackets.ClientSetArmPosePacket;
-    import net.exavior.exmagicsys.registry.EMSDataAttachments;
-    import net.minecraft.client.Minecraft;
-    import net.minecraft.world.entity.player.Player;
-    import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.exavior.exmagicsys.ExaviorMagicSystem;
+import net.exavior.exmagicsys.network.server.toclientpackets.ClientClearArmPosePacket;
+import net.exavior.exmagicsys.network.server.toclientpackets.ClientSetArmPosePacket;
+import net.exavior.exmagicsys.registry.EMSDataAttachments;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+public class EMSClientPayloadHandler {
 
-    public class EMSClientPayloadHandler {
+    private static final EMSClientPayloadHandler INSTANCE = new EMSClientPayloadHandler();
 
-        private static final EMSClientPayloadHandler INSTANCE = new EMSClientPayloadHandler();
+    public static EMSClientPayloadHandler getInstance() {
+        return INSTANCE;
+    }
 
-        public static EMSClientPayloadHandler getInstance() {
-            return INSTANCE;
-        }
-
-        public void handleSetArmPose(ClientSetArmPosePacket packet, IPayloadContext context) {
-            context.enqueueWork(() -> {
-                Player player = Minecraft.getInstance().player;
-                if (player != null) {
+    public void handleSetArmPose(ClientSetArmPosePacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (Minecraft.getInstance().level != null) {
+                Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+                if (entity instanceof Player player) {
                     player.setData(EMSDataAttachments.CLIENT_SPELL_ARM_POSE.get(), packet.animId());
                     player.setData(EMSDataAttachments.CLIENT_SPELL_ARM.get(), packet.arm());
                     player.setData(EMSDataAttachments.CLIENT_ANIM_START_TIME.get(), (long) player.tickCount);
                 }
-            });
-        }
+            }
+        });
+    }
 
-        public void handleClearArmPose(ClientClearArmPosePacket packet, IPayloadContext context) {
-            context.enqueueWork(() -> {
-                Player player = Minecraft.getInstance().player;
-                if (player != null) {
+    public void handleClearArmPose(ClientClearArmPosePacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (Minecraft.getInstance().level != null) {
+                Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+                if (entity instanceof Player player) {
                     player.removeData(EMSDataAttachments.CLIENT_SPELL_ARM_POSE.get());
                     player.removeData(EMSDataAttachments.CLIENT_SPELL_ARM.get());
                     player.removeData(EMSDataAttachments.CLIENT_ANIM_START_TIME.get());
                 }
-            });
-        }
-
-
-        private static void handle(final IPayloadContext ctx, Runnable task) {
-            ctx.enqueueWork(task)
-                    .exceptionally(e -> {
-                        // If you want to disconnect or log, uncomment:
-                        // ctx.disconnect(Component.translatable("dozed.networking.failed", e.getMessage()));
-                        ExaviorMagicSystem.LOGGER.error("Failed to handle packet: ", e);
-                        return null;
-                    });
-        }
-
-
-
-        /*public void handleToggleDash(final SPacketSyncToggleDash data, final IPayloadContext ctx) {
-            ctx.enqueueWork(() -> {
-                Player player = ctx.player();
-                // ONLY modify the Dash state.
-                player.getData(DozedAttachments.DASH_ENABLED).isToggled = data.toggled();
-
-                // If the player is actively turning Dash ON, then turn Skip off.
-                if (data.toggled()) {
-                    player.getData(DozedAttachments.SKIP_ENABLED).isToggled = false;
-                }
-            });
-        }*/
+            }
+        });
     }
+}

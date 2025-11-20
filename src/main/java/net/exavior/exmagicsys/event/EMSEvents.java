@@ -155,6 +155,8 @@ public class EMSEvents {
                 CastingState newState = new CastingState(currentState.spellId(), CastingPhase.CASTING, gameTime, currentState.source(), currentState.hand());
                 player.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
                 EMSMagicApi.playArmPose(player, spell.getCastAnim(), spell.getSpellArm());
+            } else {
+
             }
             spell.chargeTick(level, player);
 
