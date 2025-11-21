@@ -272,11 +272,15 @@ public class EMSMagicApi {
             if (spell.getChargeTimeTicks() > 0) {
                 CastingState newState = new CastingState(spellId, CastingPhase.CHARGING, level.getGameTime(), source, hand);
                 serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
-                EMSMagicApi.playArmPose(serverPlayer, spell.getChargeAnim(), spell.getSpellArm());
+                if (spell.getChargeAnim() != null) {
+                    EMSMagicApi.playArmPose(serverPlayer, spell.getChargeAnim(), spell.getSpellArm());
+                }
             } else if (spell.getCastTimeTicks() > 0) {
                 CastingState newState = new CastingState(spellId, CastingPhase.CASTING, level.getGameTime(), source, hand);
                 serverPlayer.setData(EMSDataAttachments.CASTING_STATE.get(), newState);
-                EMSMagicApi.playArmPose(serverPlayer, spell.getCastAnim(), spell.getSpellArm());
+                if (spell.getCastAnim() != null) {
+                    EMSMagicApi.playArmPose(serverPlayer, spell.getCastAnim(), spell.getSpellArm());
+                }
             } else {
                 // Instant cast
                 fireInstantSpell(serverPlayer, level, spell, spellId, (source == CastSource.ITEM) ? player.getItemInHand(hand) : ItemStack.EMPTY);
