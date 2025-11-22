@@ -22,6 +22,8 @@ public class SpellProperties {
     @Nullable private ResourceLocation castAnim = null;
     @Nullable private ResourceLocation activeAnim = null;
 
+    boolean manualCost = false;
+
 
     // By default, a spell has no classification.
     // We use a Supplier for the default value to avoid loading registries too early.
@@ -61,6 +63,11 @@ public class SpellProperties {
 
     public SpellProperties manaCostPerActiveTick(int manaCost) {
         this.manaCostPerActiveTick = manaCost;
+        return this;
+    }
+
+    public SpellProperties manualCost() {
+        this.manualCost = true;
         return this;
     }
 
@@ -111,6 +118,10 @@ public class SpellProperties {
 
     public SpellArm getSpellArm() {
         return spellArm;
+    }
+
+    public boolean isManualCost() {
+        return this.manualCost;
     }
 
     public boolean isUnlearnable() {

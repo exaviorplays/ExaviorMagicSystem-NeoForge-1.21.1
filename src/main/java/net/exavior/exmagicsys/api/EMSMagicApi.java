@@ -444,6 +444,19 @@ public class EMSMagicApi {
         }
     }
 
+    /**
+     * Triggers the mana regen cooldown from the config.
+     *
+     * @param player
+     */
+    public static void triggerManaRegenCooldown(Player player) {
+        long cooldownTime = EMSConfig.SERVER.manaRegenCooldown.get();
+        if (cooldownTime > 0) {
+            long gameTime = player.level().getGameTime();
+            player.setData(EMSDataAttachments.MANA_REGEN_COOLDOWN_UNTIL.get(), gameTime + cooldownTime);
+        }
+    }
+
     // ------------------------------- Private Helper -----------------------------------------
 
     private static void fireInstantSpell(ServerPlayer player, ServerLevel level, Spell spell, ResourceLocation spellId, ItemStack stack) {
@@ -453,20 +466,14 @@ public class EMSMagicApi {
             } else {
                 spell.cast(level, player, stack);
             }
-            EMSMagicApi.applySpellCosts(player, spell, spellId);
+            if (!spell.isManualCost()) {
+                EMSMagicApi.applySpellCosts(player, spell, spellId);
+            }
 
             if (spell.getCastAnim() != null) {
                 playArmPose(player, spell.getCastAnim(), spell.getSpellArm());
                 CastingState animState = new CastingState(spellId, CastingPhase.CASTING, player.level().getGameTime(), CastSource.KEYBIND, null);
             }
-        }
-    }
-
-    private static void triggerManaRegenCooldown(Player player) {
-        long cooldownTime = EMSConfig.SERVER.manaRegenCooldown.get();
-        if (cooldownTime > 0) {
-            long gameTime = player.level().getGameTime();
-            player.setData(EMSDataAttachments.MANA_REGEN_COOLDOWN_UNTIL.get(), gameTime + cooldownTime);
         }
     }
 }

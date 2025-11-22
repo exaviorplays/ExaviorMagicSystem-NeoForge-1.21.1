@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
  * These are registered into a custom registry.
  */
 public abstract class Spell {
+    private final SpellProperties properties;
 
     private final Holder<SpellClassification> classification;
     private final int manaCost;
@@ -31,6 +32,7 @@ public abstract class Spell {
 
 
     public Spell(SpellProperties properties) {
+        this.properties = properties;
         this.classification = properties.getClassification();
         this.manaCost = properties.getManaCost();
         this.cooldownTicks = properties.getCooldownTicks();
@@ -101,6 +103,10 @@ public abstract class Spell {
 
     public SpellArm getSpellArm() {
         return spellArm;
+    }
+
+    public boolean isManualCost() {
+        return properties.manualCost;
     }
 
     public boolean isUnlearnable() {
