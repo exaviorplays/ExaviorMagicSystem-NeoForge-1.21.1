@@ -2,12 +2,14 @@ package net.exavior.exmagicsys.api.spell;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * The base class for all spells.
@@ -15,8 +17,6 @@ import javax.annotation.Nullable;
  * These are registered into a custom registry.
  */
 public abstract class Spell {
-    private final SpellProperties properties;
-
     private final Holder<SpellClassification> classification;
     private final int manaCost;
     private final int cooldownTicks;
@@ -25,14 +25,16 @@ public abstract class Spell {
     private final int activeTimeTicks;
     private final int manaCostPerActiveTick;
     private final SpellArm spellArm;
+    private final boolean manualCost;
     private final boolean unlearnable;
+    private final int level;
+    private final List<Component> description;
     @Nullable private final ResourceLocation chargeAnim;
     @Nullable private final ResourceLocation castAnim;
     @Nullable private final ResourceLocation activeAnim;
 
 
     public Spell(SpellProperties properties) {
-        this.properties = properties;
         this.classification = properties.getClassification();
         this.manaCost = properties.getManaCost();
         this.cooldownTicks = properties.getCooldownTicks();
@@ -40,7 +42,10 @@ public abstract class Spell {
         this.chargeTimeTicks = properties.getChargeTimeTicks();
         this.activeTimeTicks = properties.getActiveTimeTicks();
         this.manaCostPerActiveTick = properties.getManaCostPerActiveTick();
+        this.manualCost = properties.manualCost;
         this.unlearnable = properties.isUnlearnable();
+        this.level = properties.getLevel();
+        this.description = properties.getDescription();
         this.spellArm = properties.getSpellArm();
         this.chargeAnim = properties.getChargeAnim();
         this.castAnim = properties.getCastAnim();
@@ -106,11 +111,19 @@ public abstract class Spell {
     }
 
     public boolean isManualCost() {
-        return properties.manualCost;
+        return manualCost;
     }
 
     public boolean isUnlearnable() {
         return this.unlearnable;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public List<Component> getDescription() {
+        return description;
     }
 
     @Nullable public ResourceLocation getChargeAnim() { return chargeAnim; }

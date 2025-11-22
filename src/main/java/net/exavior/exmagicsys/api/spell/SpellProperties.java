@@ -4,8 +4,12 @@ import net.exavior.exmagicsys.api.client.SpellAnimations;
 import net.exavior.exmagicsys.registry.EMSRegistries;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpellProperties {
     private Holder<SpellClassification> classification;
@@ -15,15 +19,16 @@ public class SpellProperties {
     private int chargeTimeTicks = 0;
     private int activeTimeTicks = 0;
     private int manaCostPerActiveTick = 0;
+    boolean manualCost = false;
     private boolean unlearnable = false;
+
+    private int level = 0;
+    private final List<Component> description = new ArrayList<>();
 
     private SpellArm spellArm = SpellArm.MAIN_HAND;
     @Nullable private ResourceLocation chargeAnim = null;
     @Nullable private ResourceLocation castAnim = null;
     @Nullable private ResourceLocation activeAnim = null;
-
-    boolean manualCost = false;
-
 
     // By default, a spell has no classification.
     // We use a Supplier for the default value to avoid loading registries too early.
@@ -73,6 +78,21 @@ public class SpellProperties {
 
     public SpellProperties unlearnable() {
         this.unlearnable = true;
+        return this;
+    }
+
+    public SpellProperties level(int level) {
+        this.level = Math.max(0, level);
+        return this;
+    }
+
+    public SpellProperties description(Component descriptionLine) {
+        this.description.add(descriptionLine);
+        return this;
+    }
+
+    public SpellProperties description(String descriptionLine) {
+        this.description.add(Component.literal(descriptionLine));
         return this;
     }
 
@@ -126,6 +146,14 @@ public class SpellProperties {
 
     public boolean isUnlearnable() {
         return this.unlearnable;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public List<Component> getDescription() {
+        return description;
     }
 
     @Nullable public ResourceLocation getChargeAnim() { return chargeAnim; }
