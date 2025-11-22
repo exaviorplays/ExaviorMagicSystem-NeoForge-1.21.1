@@ -175,7 +175,9 @@ public class EMSEvents {
                     isHolding = player.isUsingItem() && player.getUsedItemHand() == currentState.hand();
                 }
 
-                EMSMagicApi.applySpellCosts(player, spell, currentState.spellId());
+                if (!spell.isManualCost()) {
+                    EMSMagicApi.applySpellCosts(player, spell, currentState.spellId());
+                }
                 boolean canStartActive = spell.getActiveTimeTicks() > 0 && isHolding;
 
                 if (canStartActive) {
