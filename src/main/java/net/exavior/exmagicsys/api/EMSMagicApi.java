@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -377,6 +378,16 @@ public class EMSMagicApi {
             long expirationTime = player.level().getGameTime() + spell.getCooldownTicks();
             newCooldowns.put(spellId, expirationTime);
             player.setData(EMSDataAttachments.SPELL_COOLDOWNS.get(), newCooldowns);
+        }
+    }
+
+    public static void addCooldown(Player player, ResourceLocation spellId, int ticks) {
+        if (ticks > 0) {
+            Map<ResourceLocation, Long> currentCooldowns = (Map)player.getData((AttachmentType)EMSDataAttachments.SPELL_COOLDOWNS.get());
+            Map<ResourceLocation, Long> newCooldowns = new HashMap(currentCooldowns);
+            long expirationTime = player.level().getGameTime() + (long)ticks;
+            newCooldowns.put(spellId, expirationTime);
+            player.setData((AttachmentType)EMSDataAttachments.SPELL_COOLDOWNS.get(), newCooldowns);
         }
     }
 
